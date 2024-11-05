@@ -5,10 +5,10 @@ weight : 1
 chapter : false
 ---
 # AWS Card Clash Cloud Practitioner Quest 7
-
+# CI/CD for serverless application
 ### Overview
 * In this blog post, you will practice an architecture inspired by Quest 7 of AWS Card Clash.
-* This is an architecture that builds a CI/CD pipeline along with a cloudformation template to update lambda functions.
+* This is an architecture that builds a CI/CD pipeline along with a cloudformation template to update stack include the lambda functions.
 
 * The talisman said: "Life does not lack good people, it only lacks those who persevere to the end." So please persevere in completing this exercise =))
 ![arch](/workshop-aws-card-clash-7/images/arc.png) 
