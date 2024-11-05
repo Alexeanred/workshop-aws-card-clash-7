@@ -1,0 +1,225 @@
+[
+{
+	"uri": "https://alexeanred.github.io/ws1/vi/",
+	"title": "Amazon Translate",
+	"tags": [],
+	"description": "",
+	"content": "Dịch AWS Blogs nhanh hơn với Amazon Translate Tổng quan Trong bài lab này, bạn sẽ học cách dùng Amazon Translate bằng việc thực hành 2 phương pháp để dịch văn bản từ Tiếng Anh sang Tiếng Việt.\nPhương pháp đầu tiên là batch translation: Ưu điểm là dễ thiết lập, nhược điểm là thời gian chờ dịch khá lâu. Phương pháp thứ hai là serverless translation: Ưu điểm thời gian dịch nhanh, gần như theo thời gian thực, nhược điểm là thiết lập khó hơn. Tấm bùa đã ghi: \u0026ldquo;Cuộc sống không thiếu người giỏi, chỉ thiếu những người kiên trì đến cùng\u0026rdquo;. Vì thế hãy kiên trì làm hết bài lab này nhé =)) Nội dung Giới thiệu Các bước chuẩn bị Batch Translation Serverless Translation Dọn dẹp tài nguyên Đọc thêm và ý tưởng "
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/vi/1-introduce/",
+	"title": "Giới thiệu",
+	"tags": [],
+	"description": "",
+	"content": "Amazon Translate là dịch vụ Neural Machine Translation (MT) để dịch văn bản giữa các ngôn ngữ được dịch vụ hỗ trợ. Dịch vụ cung cấp bản dịch ngôn ngữ chất lượng cao, giá cả phải chăng và có thể tùy chỉnh, cho phép các nhà phát triển dịch nội dung do công ty và người dùng tạo ra hoặc xây dựng các ứng dụng yêu cầu hỗ trợ trên nhiều ngôn ngữ.\nMột số use cases phổ biến: Trong công ty ứng dụng vào ghi chép cuộc họp, báo cáo kỹ thuật,\u0026hellip; Dịch email, đoạn chat trong game, đoạn chat với khách hàng,\u0026hellip; Hỗ trợ dịch trên 75 ngôn ngữ. Đầu vào là những văn bản có định dạng UTF-8. Bảng phí tham khảo: Translation Type Pricing Free Tier Standard Text Translation $15.00 per million characters 2 million characters per month for 12 months Batch Document Translation $15.00 per million characters 2 million characters per month for 12 months Real-Time Document Translation (Text \u0026amp; HTML) $15.00 per million characters No Free Tier for this service Real-Time Document Translation (Docx) $30.00 per million characters No Free Tier for this service Active Custom Translation $60.00 per million characters 500,000 characters per month for 2 months Amazon S3 là một dịch vụ lưu trữ dạng đối tượng (object) cung cấp khả năng mở rộng theo yêu cầu sử dụng, đảm bảo tính khả dụng của dữ liệu, độ bảo mật và hiệu năng ở mức cao nhất.\nTrong bài này S3 được dùng như một nơi chứa tài liệu trước khi và sau khi dịch và là 1 \u0026ldquo;trigger\u0026rdquo; để chạy \u0026ldquo;lambda function\u0026rdquo;. AWS Lambda là một dịch vụ \u0026ldquo;serverless compute\u0026rdquo; cho phép bạn chạy ứng dụng mà không cần khởi tạo hoặc quản lý máy chủ. Bạn tổ chức ứng dụng của mình thành các Lambda function. Lambda function chỉ chạy khi cần thiết và có khả năng tự động mở rộng quy mô. Bạn chỉ phải trả cho thời gian tính toán mà bạn sử dụng — AWS sẽ không tính phí khi ứng dụng của bạn không chạy.\nTrong bài này làm \u0026ldquo;lambda function\u0026rdquo; được viết bằng ngôn ngữ Python và sẽ xử lý những tài liệu để quá trình dịch hoàn thành tốt nhất. Amazon Cloudwatch là 1 dịch vụ \u0026ldquo;monitoring\u0026rdquo; giám sát những tài nguyên và ứng dụng chạy trên AWS.\nTrong bài này Cloudwatch dùng để theo dõi quá trình hoạt động của lambda function và S3 bucket, từ đó ta có thể sửa lỗi, debug giúp cho kiến trúc serverless hoạt động tốt hơn. AWS IAM là một công cụ trong AWS cho phép bạn kiểm soát truy cập vào các tài nguyên AWS của bạn một cách an toàn. Bạn có thể sử dụng IAM để kiểm soát quá trình xác thực (authentication) trong quá trình đăng nhập và quá trình ủy quyền (authorization) trong việc sử dụng tài nguyên.\nTrong bài này IAM dùng để quản lý việc tạo user và cấp quyền, role cho user và cả cấp quyền cho lambda function. "
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/vi/4-serverlesstranslation/4.1-batching/",
+	"title": "Quá trình Batching",
+	"tags": [],
+	"description": "",
+	"content": "\nTổng quan Description Limit Character encoding UTF-8 Maximum input text 10,000 bytes Maximum number of characters per document 100,000 Amazon Translate real-time giới hạn 10,000 bytes tương đương 10 Kb trên một API call.\nNên để không vượt quá giới hạn về size, ta phải chia những file trên 10 Kb nhỏ hơn.\nQuá trình batching giúp ta làm được điều đó, 1 file có thể chia thành nhiều files.\nNgười dùng sẽ tải files lên vào Batching bucket, Batching function nhận events, xử lý và trả những files về Batched bucket.\nNội dung Thêm trigger Cấu hình function "
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/vi/3-batchtranslation/3.1-batchjob/",
+	"title": "Tạo batch translation job",
+	"tags": [],
+	"description": "",
+	"content": " Ở console, trong thanh tìm kiếm, nhập Translate. Trong giao diện Translate: Chọn Batch translation. Chọn nút Create job. Trong Create Translate Job: Ở mục Name, nhập MyTranslateJob. Chọn source language: English. Chọn target language: Vietnamese. Ở mục Input data: Chọn nút Select folder . Truy cập vào đường dẫn thư mục trong input bucket: s3://translate-job-batch-input-150903/raw/. Chọn dạng File format: Plain text (.txt). Truy cập vào đường dẫn thư mục trong output bucket: s3://translate-job-batch-output-150903/output/. Dữ liệu của bạn đã được mã hóa mặc định. Ta phải cấp quyền cho Translate truy cập vào S3 buckets: Chọn tạo mới IAM role Create an IAM role. Trong mục IAM role: Chọn Input and output S3 buckets nếu bạn muốn chỉ cho quyền Translate truy cập vào 2 buckets này. Nếu muốn cho tất cả buckets thì chọn Any S3 bucket. Đặt tên role name: AllowAccessS3InputOutput Chọn nút Create job. Nếu bạn đã chọn Create job và bị lỗi này thì do bạn chưa có file ở thư mục raw của input bucket. Bạn phải tải lên file cần dịch trước khi tạo job.\nTruy cập vào input bucket và vào thư mục raw, tải những file .txt bạn muốn dịch lên. Nếu bạn đã tải file lên rồi mà vẫn lỗi thì đó là do trước đó bạn đã tạo IAM Role với tên đó rồi, để Create job thành công, bạn cần đặt tên role khác đi hoặc refresh lại trang để Translate biết role đã tồn tại và có thể sử dụng. Sau khi bạn chọn Create job thì job sẽ ở trạng thái in progress cho đến khi hoàn thành job. Bạn có thể xem trạng thái và các cấu hình ta đã làm khi bấm vào. Amazon Translate không tính tiền nếu bạn chọn cùng 1 ngôn ngữ cho \u0026ldquo;source language\u0026rdquo; và \u0026ldquo;target language\u0026rdquo;. Nếu bạn chọn chế độ \u0026ldquo;auto\u0026rdquo; tự động phát hiện ngôn ngữ thì bạn sẽ bị tính phí cho phần đó.\nNên tạo S3 buckets và bỏ file cần dịch vào trước khi đưa URI vào translate job.\nNếu bạn gặp lỗi không tìm thấy S3 buckets thì có thể do bạn đã tạo S3 bucket đó ở một region khác với region chạy translate.\n"
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/vi/2-prerequiste/2.1-createiam/",
+	"title": "Tạo IAM user và IAM role",
+	"tags": [],
+	"description": "",
+	"content": "Trong bước này, ta sẽ tạo 1 user cho workshop và gán role chứa các policies cần thiết. Chúng ta thực hành theo best practices là least privilege.\nTổng quan kiến trúc sau khi các bạn hoàn tất bước này sẽ như sau:\nBạn cũng có thể tham khảo bài lab này trên aws study group :\nGiới thiệu về IAM Nội dung Tạo workshop user Tạo workshop role Cấp quyền user assume role Truy cập user và đổi sang role cho workshop "
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/vi/2-prerequiste/2.3-createlambda/2.3.1-lambdafunction/",
+	"title": "Tạo Lambda functions",
+	"tags": [],
+	"description": "",
+	"content": "Tạo lambda function Trong console, vào thanh tìm kiếm, nhập lambda: Sau khi vào lambda, chọn nút Create function. Trong Create function: Chọn Author from stratch. Nhập tên function: batchingFunction. Chọn Runtime: Python 3.12. Chọn architecture: _x86_64. Chọn nút Create function. Làm tương tự 3 bước trên để tạo được 3 functions sau: batchingFunction translateFunction combineFunction Như vậy, ta đã tạo được các lambda functions, bước tiếp theo là tạo role để lambda có quyền truy cập các tài nguyên khác. "
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/vi/2-prerequiste/2.2-creates3/2.2.1-s3batch/",
+	"title": "Tạo S3 buckets cho batch translation",
+	"tags": [],
+	"description": "",
+	"content": "Tạo S3 bucket cho input Trên console, vào thanh tìm kiếm, nhập vào S3 để vào Amazon S3: Trong S3, chọn nút Create bucket để tạo bucket mới: Trong Create Bucket: Chọn AWS Region: Singapore (ap-southeast-1). Nhập bucket name: translate-job-batch-input-\u0026lt;your_id\u0026gt;. Ví dụ: translate-job-batch-input-150903. Chọn id của riêng bạn để không trùng với tên của các buckets khác trên Amazon S3.\nCác thông số khác để mặc định, chọn nút Create Bucket. Sau khi bucket tạo thành công, truy cập vào bucket. Sau đó, chọn nút Create folder. Trong Create folder: Nhập folder name: raw. Sau đó, chọn nút Create folder. Tạo S3 bucket cho output Trong S3, chọn nút Create bucket để tạo bucket mới: Trong Create Bucket: Chọn AWS Region: Singapore (ap-southeast-1). Nhập bucket name: translate-job-batch-output-\u0026lt;your_id\u0026gt;. Ví dụ: translate-job-batch-output-150903. Chọn id của riêng bạn để không trùng với tên của các buckets khác trên Amazon S3.\nCác thông số khác để mặc định, chọn nút Create Bucket. Sau khi bucket tạo thành công, truy cập vào bucket. Sau đó, chọn nút Create folder. Trong Create folder: Nhập folder name: output. Sau đó, chọn nút Create folder. Bạn đã hoàn thành xong việc tạo 2 buckets cho batch translation.\n"
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/vi/2-prerequiste/2.1-createiam/2.1.1-createuser/",
+	"title": "Tạo workshop user ",
+	"tags": [],
+	"description": "",
+	"content": "Tạo workshop IAM user Truy cập vào console: Vào thanh tìm kiếm. Nhập IAM. Tại trang IAM. Chọn mục user. Chọn nút Create user. Trong Step 1: Nhập user name: workshop-1-user. Chọn Provide user access to the AWS Management Console. Chọn user type: I want to create an IAM user. Chọn custom password: nhập password cho user đó. Bỏ chọn Users must create a new password at next sign-in. Chọn nút Next. Trong Step 2, chọn Add user to group. Chọn nút Next. Trong Step 3, xem lại thông tin và chọn nút Create user. Trong Step 4, copy lại những thông tin cần thiết cho đăng nhập vào user. Bạn đã tạo xong user cho workshop 1, tiếp theo là tạo workshop role. "
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/vi/4-serverlesstranslation/4.1-batching/4.1.1-trigger/",
+	"title": "Thêm trigger vào batching function",
+	"tags": [],
+	"description": "",
+	"content": " Truy cập vào batching function ở Lambda đã khởi tạo ở bước 2: Chọn Add trigger. Trong thanh tìm kiếm: Nhập S3. Trong Trigger configuration: Bucket: batching-bucket-\u0026lt;your_id\u0026gt;. Event types: để mặc định: All object create events. Tick vào: I acknowledge that \u0026hellip;. Chọn nút Add. Bạn đã thành công thêm trigger vào function.\n"
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/vi/4-serverlesstranslation/4.3-combine/4.3.1-trigger/",
+	"title": "Thêm trigger vào combine function",
+	"tags": [],
+	"description": "",
+	"content": " Truy cập vào combine function ở Lambda đã khởi tạo ở bước 2: Chọn Add trigger. Trong thanh tìm kiếm: Nhập S3. Trong Trigger configuration: Bucket: translated-bucket-\u0026lt;your_id\u0026gt;. Event types: để mặc định: All object create events. Tick vào: I acknowledge that \u0026hellip;. Chọn nút Add. Bạn đã thành công thêm trigger vào function.\n"
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/vi/4-serverlesstranslation/4.2-translate/4.2.1-trigger/",
+	"title": "Thêm trigger vào translate function",
+	"tags": [],
+	"description": "",
+	"content": " Truy cập vào translate function ở Lambda đã khởi tạo ở bước 2: Chọn Add trigger. Trong thanh tìm kiếm: Nhập S3. Trong Trigger configuration: Bucket: batched-bucket-\u0026lt;your_id\u0026gt;. Event types: để mặc định: All object create events. Tick vào: I acknowledge that \u0026hellip;. Chọn nút Add. Bạn đã thành công thêm trigger vào function\n"
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/vi/2-prerequiste/",
+	"title": "Các bước chuẩn bị",
+	"tags": [],
+	"description": "",
+	"content": "Để chuẩn bị cho các phần sau, ở phần 2 này, ta sẽ tạo một số tài nguyên để cấp quyền, tạo nơi chứa tài liệu, tạo các hàm logic để xử lý các tài liệu.\nNội dung Tạo IAM user và IAM role Tạo S3 bukets Tạo Lambda functions "
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/vi/2-prerequiste/2.3-createlambda/2.3.2-lambdarole/",
+	"title": "Cấp quyền cho Lambda functions",
+	"tags": [],
+	"description": "",
+	"content": "Tạo Lambda role Truy cập vào IAM: Chọn mục Roles. Chọn nút Create role. Trong step 1: Chọn AWS service. Tại mục Use case, trong Service or use case: Chọn Lambda. Chọn nút Next. Trong Step 2: Thêm các permissions sau vào thanh tìm kiếm và tick vào: AmazonS3FullAccess, CloudWatchFullAccess, TranslateFullAccess. Trong Step 3: Nhập Role name: AllowLambdaFunctionWorkshop1. Review lại các thông tin và chọn nút Create role. Gán role vào lambda functions Truy cập lại vào lambda function và chọn 1 function để gán role: Sau khi chọn batchingFunction: chọn mục Configuration. chọn mục Permissions. chọn nút Edit. Trong Edit, tại mục Existing role: Chọn role name vừa tạo ở IAM role: AllowLambdaFunctionWorkshop1. Chọn nút Save. Kiểm tra lại Role name ở function đó và làm tương tự với 2 functions còn lại. Bạn đã hoàn thành xong các thiết lập để dùng lambda functions. "
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/vi/4-serverlesstranslation/4.1-batching/4.1.2-function/",
+	"title": "Cấu hình Batching function",
+	"tags": [],
+	"description": "",
+	"content": " Ở batching function: Trong phần Code: Nhập vào đoạn code sau: import boto3 import json import os s3 = boto3.client(\u0026#39;s3\u0026#39;) MAX_CHARS = 9500 def lambda_handler(event, context): print(json.dumps(event, indent=2)) output_bucket = os.environ.get(\u0026#39;OutputBucket\u0026#39;) if not output_bucket: return print(\u0026#39;Error: OutputBucket not defined\u0026#39;) for record in event[\u0026#39;Records\u0026#39;]: try: do_batching(record, output_bucket) except Exception as e: print(f\u0026#39;Handler error: {e}\u0026#39;) def split_into_sentences(text): sentences = [] start = 0 for i, char in enumerate(text): if char in [\u0026#39;.\u0026#39;, \u0026#39;!\u0026#39;, \u0026#39;?\u0026#39;] and i \u0026gt; 0 and text[i - 1] not in [\u0026#39;.\u0026#39;, \u0026#39;!\u0026#39;, \u0026#39;?\u0026#39;]: sentences.append(text[start:i + 1]) start = i + 1 if start \u0026lt; len(text): sentences.append(text[start:]) return sentences def do_batching(event, output_bucket): original_text = s3.get_object( Bucket=event[\u0026#39;s3\u0026#39;][\u0026#39;bucket\u0026#39;][\u0026#39;name\u0026#39;], Key=event[\u0026#39;s3\u0026#39;][\u0026#39;object\u0026#39;][\u0026#39;key\u0026#39;] ) print(\u0026#39;Downloaded object from S3\u0026#39;) text = original_text[\u0026#39;Body\u0026#39;].read().decode(\u0026#39;utf-8\u0026#39;) print(f\u0026#39;Original text length: {len(text)}\u0026#39;) sentences = split_into_sentences(text) counter = 0 while sentences: counter += 1 batch_text = \u0026#39;\u0026#39; while sentences and len(batch_text) + len(sentences[0]) \u0026lt;= MAX_CHARS: batch_text += sentences.pop(0) + \u0026#39; \u0026#39; new_key = event[\u0026#39;s3\u0026#39;][\u0026#39;object\u0026#39;][\u0026#39;key\u0026#39;].replace(\u0026#39;.txt\u0026#39;, f\u0026#39;-{counter}.txt\u0026#39;) result = s3.put_object( Bucket=output_bucket, Key=new_key, Body=batch_text.strip(), ContentType=\u0026#39;text/plain\u0026#39; ) print(f\u0026#39;S3 result: {json.dumps(result, indent=2)}\u0026#39;) # Entry point for local testing if __name__ == \u0026#39;__main__\u0026#39;: sample_event = { \u0026#34;Records\u0026#34;: [ { \u0026#34;s3\u0026#34;: { \u0026#34;bucket\u0026#34;: { \u0026#34;name\u0026#34;: \u0026#34;example-bucket\u0026#34; }, \u0026#34;object\u0026#34;: { \u0026#34;key\u0026#34;: \u0026#34;example.txt\u0026#34; } } } ] } lambda_handler(sample_event, None) Giải thích: Giới hạn số ký tự 1 file không quá 9500 ký tự. Tạo hàm để chia đoạn văn thành các câu. Sau đó, gộp các câu lại và trả về các files ở batched bucket. Sau đó, chọn nút Deploy để hàm cập nhật đoạn code mới nhất. Sau đó, vào mục Configuration: Chọn Environment variables. Chọn nút Edit. Trong Environment variables: Chọn nút: Add environment variable. Ở Key: nhập OutputBucket. Ở Value: nhập batched-bucket-\u0026lt;your_id\u0026gt;. Chọn nút Save. Để test hàm vừa tạo: Chọn nút test. Chọn Create new event. Event name: nhập test Trong Event JSON: Nhập: { \u0026#34;Records\u0026#34;: [ { \u0026#34;s3\u0026#34;: { \u0026#34;bucket\u0026#34;: { \u0026#34;name\u0026#34;: \u0026#34;batching-bucket-\u0026lt;your_id\u0026gt;\u0026#34; }, \u0026#34;object\u0026#34;: { \u0026#34;key\u0026#34;: \u0026#34;IELST-reading2.txt\u0026#34; } } } ] } Ở trên: bucket name là tên bucket ta tải file dịch lên (batching bucket), object key là file ta đã tải lên muốn dịch. Chọn nút Save và sau đó bạn có thể test được. Sau khi test xong, bạn có thể truy cập vào cloudwatch để xem log của request ta gửi test: Chọn mục Monitor. Chọn View Cloudwatch logs. Chọn mục log streams để xem log và refresh nếu có log mới gửi vào. Hooray!!! Bạn đã cấu hình xong batching function.\n"
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/vi/4-serverlesstranslation/4.3-combine/4.3.2-function/",
+	"title": "Cấu hình Combine function",
+	"tags": [],
+	"description": "",
+	"content": " Ở combine function: Trong phần Code:\nNhập vào đoạn code sau: import boto3 import json import os s3 = boto3.client(\u0026#39;s3\u0026#39;) def combine_content(files): # Combine the content of multiple files combined_content = \u0026#39;\u0026#39; for file_content in files: combined_content += file_content + \u0026#34;\\n\\n\u0026#34; return combined_content def group_keys_by_pattern(key_names, pattern): grouped_keys = {pattern: []} for key_name in key_names: if pattern in key_name: grouped_keys[pattern].append(key_name) return grouped_keys def sample_event_func(input_key_name): # Initialize the S3 client s3 = boto3.client(\u0026#39;s3\u0026#39;) # If key_names is not provided, retrieve key names from the bucket # Specify the bucket name bucket_name = os.environ.get(\u0026#39;OutputBucket\u0026#39;) try: # List objects within the bucket response = s3.list_objects_v2(Bucket=bucket_name) # Extract key names from the response if \u0026#39;Contents\u0026#39; in response: key_names = [obj[\u0026#39;Key\u0026#39;] for obj in response[\u0026#39;Contents\u0026#39;]] print(key_names) else: print(\u0026#34;No objects found in the bucket.\u0026#34;) return except Exception as e: print(f\u0026#34;Error: {e}\u0026#34;) return # Extract pattern from the input key name parts = input_key_name.rsplit(\u0026#34;-\u0026#34;, 1) print(parts) if len(parts) \u0026gt; 1 and parts[1].rsplit(\u0026#34;.\u0026#34;, 1)[0].isdigit(): # Check if the part on the right is not a number pattern = parts[0] # Use the part on the left as pattern else: pattern = input_key_name # Use the entire input_key_name as pattern print(pattern) # Group key names based on the extracted pattern grouped_keys = group_keys_by_pattern(key_names, pattern) print(grouped_keys) # Create sample event containing keys with similar pattern sample_event = { \u0026#34;Records\u0026#34;: [ { \u0026#34;s3\u0026#34;: { \u0026#34;bucket\u0026#34;: { \u0026#34;name\u0026#34;: os.environ.get(\u0026#39;OutputBucket\u0026#39;) }, \u0026#34;object\u0026#34;: { \u0026#34;key\u0026#34;: key_name } } } for key_name in grouped_keys[pattern] ] } return sample_event def lambda_handler(event, context): # Specify the bucket name bucket_name = os.environ.get(\u0026#39;OutputBucket\u0026#39;) print(event) # List to store the content of all files key_name = event[\u0026#39;Records\u0026#39;][0][\u0026#39;s3\u0026#39;][\u0026#39;object\u0026#39;][\u0026#39;key\u0026#39;] print(key_name) file_contents = [] files_to_delete = [] sample_events = sample_event_func(key_name) # Check if sample_events is empty if not sample_events: return { \u0026#39;statusCode\u0026#39;: 205, \u0026#39;body\u0026#39;: \u0026#39;File not found in the bucket\u0026#39; } if not sample_events[\u0026#39;Records\u0026#39;]: print(\u0026#34;No sample events generated.\u0026#34;) return { \u0026#39;statusCode\u0026#39;: 206, \u0026#39;body\u0026#39;: \u0026#39;Exit the lambda_handler because the records has been handled\u0026#39; } print(sample_events) # Loop through each record in the event for record in sample_events[\u0026#39;Records\u0026#39;]: print(record) # # Extract the bucket and file key from the record bucket = record[\u0026#39;s3\u0026#39;][\u0026#39;bucket\u0026#39;][\u0026#39;name\u0026#39;] key = record[\u0026#39;s3\u0026#39;][\u0026#39;object\u0026#39;][\u0026#39;key\u0026#39;] # tan dung bucket de lay key name # Retrieve the content of the file file_obj = s3.get_object(Bucket=bucket, Key=key) # Extract the content from the file object file_content = file_obj[\u0026#39;Body\u0026#39;].read().decode(\u0026#39;utf-8\u0026#39;) print(file_content) file_contents.append(file_content) # Append the content to the combined content # combined_content += file_content + \u0026#34;\\n\\n\u0026#34; # print(\u0026#34;Day la combine lan \u0026#34;,count) # print(combined_content) files_to_delete.append({\u0026#39;Key\u0026#39;: key, \u0026#39;Bucket\u0026#39;: bucket}) print(files_to_delete) # count+=1 print(file_contents) # # Write the combined content to a new file combined_content = combine_content(file_contents) print(\u0026#34;Key hien tai la: \u0026#34;, key) copy_k = key parts = copy_k.rsplit(\u0026#34;-\u0026#34;, 1) print(parts) if len(parts) \u0026gt; 1 and parts[1].rsplit(\u0026#34;.\u0026#34;, 1)[0].isdigit(): # Check if the part on the right is not a number combined_key = parts[0] + \u0026#34;.txt\u0026#34; # Use the part on the left as pattern else: combined_key = copy_k # Use the entire input_key_name as pattern #combined_key= \u0026#34;new_ielst.txt\u0026#34; print(\u0026#34;Key sau khi chinh sua la: \u0026#34;, combined_key) s3.put_object(Bucket=os.environ.get(\u0026#39;NewBucket\u0026#39;), Key=combined_key, Body=combined_content.encode(\u0026#39;utf-8\u0026#39;)) # Delete the original files print(\u0026#34;Files of delete: \u0026#34;,files_to_delete) for file_to_delete in files_to_delete: print(file_to_delete) s3.delete_object(Bucket=file_to_delete[\u0026#39;Bucket\u0026#39;], Key=file_to_delete[\u0026#39;Key\u0026#39;]) print(\u0026#34;Deleted file \u0026#34;,file_to_delete[\u0026#39;Key\u0026#39;]) return { \u0026#39;statusCode\u0026#39;: 200, \u0026#39;body\u0026#39;: \u0026#39;Files combined successfully!\u0026#39; } # Entry point for local testing if __name__ == \u0026#39;__main__\u0026#39;: sample_event = { \u0026#34;Records\u0026#34;: [ { \u0026#34;s3\u0026#34;: { \u0026#34;bucket\u0026#34;: { \u0026#34;name\u0026#34;: \u0026#34;example-bucket\u0026#34; }, \u0026#34;object\u0026#34;: { \u0026#34;key\u0026#34;: \u0026#34;example.txt\u0026#34; } } }, { \u0026#34;s3\u0026#34;: { \u0026#34;bucket\u0026#34;: { \u0026#34;name\u0026#34;: \u0026#34;example-bucket\u0026#34; }, \u0026#34;object\u0026#34;: { \u0026#34;key\u0026#34;: \u0026#34;example1.txt\u0026#34; } } } ] } lambda_handler(sample_event, None) Giải thích: Ta sẽ cấu hình lại events bằng 1 hàm để nhận vào tên của object của event đó. Sau đó, hàm sẽ tìm những đặc điểm để tìm những files có cùng format để tạo 1 event chứa tên những objects đó và gộp lại. Như vậy, với việc dịch 1 lúc nhiều tài liệu thì sẽ không xảy ra lỗi không tìm được files đúng để gộp lại. Sau đó, chọn nút Deploy để hàm cập nhật đoạn code mới nhất. Sau đó, vào mục Configuration: Chọn Environment variables. Chọn nút Edit. Trong Environment variables: Chọn nút: Add environment variable. Ở Key: nhập OutputBucket. Ở Value: nhập translated-bucket-\u0026lt;your_id\u0026gt;. Chọn nút: Add environment variable. Ở Key: nhập NewBucket. Ở Value: nhập final-translated-bucket-\u0026lt;your_id\u0026gt;. Chọn nút Save. Bạn có thể truy cập vào cloudwatch để xem log của request ta gửi: Chọn mục Monitor. Chọn View Cloudwatch logs. Chọn mục log streams để xem log và refresh nếu có log mới gửi vào. Hooray!!! Bạn đã cấu hình xong combine function.\n"
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/vi/4-serverlesstranslation/4.2-translate/4.2.2-function/",
+	"title": "Cấu hình Translate function",
+	"tags": [],
+	"description": "",
+	"content": " Ở translate function: Trong phần Code: Nhập vào đoạn code sau: import boto3 import os import json s3_client = boto3.client(\u0026#39;s3\u0026#39;) translate = boto3.client(\u0026#39;translate\u0026#39;) def translate_text(text, lang_code): result = translate.translate_text( Text=text, SourceLanguageCode=\u0026#39;auto\u0026#39;, TargetLanguageCode=lang_code ) return result[\u0026#39;TranslatedText\u0026#39;] def lambda_handler(event, context): for record in event[\u0026#39;Records\u0026#39;]: bucket_name = record[\u0026#39;s3\u0026#39;][\u0026#39;bucket\u0026#39;][\u0026#39;name\u0026#39;] file_key = record[\u0026#39;s3\u0026#39;][\u0026#39;object\u0026#39;][\u0026#39;key\u0026#39;] output_bucket = os.environ.get(\u0026#39;OutputBucket\u0026#39;) # Output bucket for translated files print(f\u0026#34;Translating file: {file_key}\u0026#34;) # Get the object from S3 obj = s3_client.get_object(Bucket=bucket_name, Key=file_key) text = obj[\u0026#39;Body\u0026#39;].read().decode(\u0026#39;utf-8\u0026#39;) # Translate the text translated_text = translate_text(text, \u0026#39;vi\u0026#39;) # Upload translated content to S3 output_key = f\u0026#34;translated_{file_key}\u0026#34; # You may want to adjust the naming convention s3_client.put_object(Body=translated_text.encode(\u0026#39;utf-8\u0026#39;), Bucket=output_bucket, Key=output_key) print(f\u0026#34;Translation completed for {file_key}\u0026#34;) print(\u0026#34;All files translated and uploaded to S3\u0026#34;) Giải thích: Tạo 1 hàm để dịch đoạn văn qua việc gọi API của translate Hàm lambda_handler được dùng để nhận events và xử lý nó để kết quả xuất hiện ở translated bucket. Sau đó, chọn nút Deploy để hàm cập nhật đoạn code mới nhất. Sau đó, vào mục Configuration: Chọn Environment variables. Chọn nút Edit. Trong Environment variables: Chọn nút: Add environment variable. Ở Key: nhập OutputBucket. Ở Value: nhập translated-bucket-\u0026lt;your_id\u0026gt;. Chọn nút Save. Để test hàm vừa tạo: Chọn nút test. Chọn Create new event. Event name: nhập test Trong Event JSON: Nhập: {\r\u0026#34;Records\u0026#34;: [\r{\r\u0026#34;s3\u0026#34;: {\r\u0026#34;bucket\u0026#34;: {\r\u0026#34;name\u0026#34;: \u0026#34;batched-bucket-\u0026lt;your_id\u0026gt;\u0026#34;\r},\r\u0026#34;object\u0026#34;: {\r\u0026#34;key\u0026#34;: \u0026#34;IELST-reading2-1.txt\u0026#34;\r}\r}\r}\r]\r} Ở trên: bucket name là tên bucket ta có những file đã qua quá trình batching (batched bucket), object key là 1 file trong bucket đó. Chọn nút Save và sau đó bạn có thể test được. Sau khi test xong, bạn có thể truy cập vào cloudwatch để xem log của request ta gửi test: Chọn mục Monitor. Chọn View Cloudwatch logs. Chọn mục log streams để xem log và refresh nếu có log mới gửi vào. Hooray!!! Bạn đã cấu hình xong translate function.\n"
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/vi/4-serverlesstranslation/4.2-translate/",
+	"title": "Quá trình Translate",
+	"tags": [],
+	"description": "",
+	"content": "\nTổng quan Sau khi nhận events là đã có objects được put vào bucket batched-bucket. Translation function sẽ gửi đoạn văn (text) trong những files đó đến Amazon Translate để dịch, sau đó, API của Amazon translate sẽ trả về đoạn văn đã dịch. Các files đã dịch được put vào Translated bucket. Nội dung Thêm trigger Cấu hình function "
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/vi/2-prerequiste/2.2-creates3/",
+	"title": "Tạo S3 buckets",
+	"tags": [],
+	"description": "",
+	"content": " Trong bước này, chúng ta sẽ tạo các s3 buckets cho cả batch translation và serverless translation.\nNội dung Tạo s3 bucket cho batch translation Tạo s3 bucket cho serverless translation "
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/vi/2-prerequiste/2.2-creates3/2.2.2-s3serverless/",
+	"title": "Tạo S3 buckets cho serverless translation",
+	"tags": [],
+	"description": "",
+	"content": "Tạo s3 buckets cho serverless translation Trong S3, chọn nút Create bucket để tạo bucket mới: Trong Create Bucket: Chọn AWS Region: Singapore (ap-southeast-1). Nhập bucket name: batching-bucket-\u0026lt;your_id\u0026gt;. Ví dụ: batching-bucket-150903. Chọn id của riêng bạn để không trùng với tên của các buckets khác trên Amazon S3.\nCác thông số khác để mặc định, chọn nút Create Bucket. Làm tương tự như 3 bước trên để tạo thành công 4 buckets như sau: batching-bucket-\u0026lt;your_id\u0026gt; batched-bucket-\u0026lt;your_id\u0026gt; translated-bucket-\u0026lt;your_id\u0026gt; final-translated-bucket-\u0026lt;your_id\u0026gt; Hooray! bạn đã hoàn thành xong việc tạo các S3 buckets, tiếp theo chuẩn bị các lambda functions nào.\n"
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/vi/2-prerequiste/2.1-createiam/2.1.2-createrole/",
+	"title": "Tạo workshop role",
+	"tags": [],
+	"description": "",
+	"content": "Tạo Role Trong trang IAM: Chọn mục Roles. Chọn Create role. Trong Step 1: Chọn AWS account. Chọn This account. Chọn nút Next. Trong Step 2: Copy các policy names sau vào thanh tìm kiếm và tick vào chọn: AmazonS3FullAccess AWSLambda_FullAccess CloudWatchFullAccess IAMFullAccess TranslateFullAccess Chọn nút Next. Trong step 3: Nhập role name: workshop1-role. Review lại mục Trust policy xem có cho phép dùng role trên tài khoản này không. Xem lại các quyền mình đã cấp cho role thông qua các policy name. Thêm tags nếu cần và chọn nút Create role. Bạn đã hoàn thành xong việc tạo role cho workshop user. "
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/vi/3-batchtranslation/3.2-review/",
+	"title": "Xem kết quả và cách chạy lại job",
+	"tags": [],
+	"description": "",
+	"content": "Xem kết quả Sau khi chạy xong job, thì status sẽ chuyển sang Completed. Lúc này bạn có thể vào S3 bucket output để xem thành quả. Khi vào S3 bucket output, chọn thư mục output. Chọn thư mục bắt đầu bằng id account của mình: Chọn 1 file đã được dịch: Dịch sang tiếng Việt nên đầu file là vi. Bấm vào nút Open hoặc Download để xem. Cách chạy lại job Vào lại job ở Batch Translation: Chọn nút Copy. Nó sẽ tự động cấu hình lại job như cũ và tên có thêm chữ copy Bạn có thể sử dụng lại role cũ nếu muốn dùng 2 buckets cũ. "
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/vi/2-prerequiste/2.1-createiam/2.1.3-assumerole/",
+	"title": "Cấp quyền cho user assume role",
+	"tags": [],
+	"description": "",
+	"content": "Cấp quyền cho user Truy cập vào user workshop-1-user vừa tạo: Chọn nút Add permissions. Chọn Create inline policy. Ở Step 1: Chọn mục JSON. Copy và dán vào những dòng sau: {\r\u0026#34;Version\u0026#34;: \u0026#34;2012-10-17\u0026#34;,\r\u0026#34;Statement\u0026#34;: {\r\u0026#34;Effect\u0026#34;: \u0026#34;Allow\u0026#34;,\r\u0026#34;Action\u0026#34;: \u0026#34;sts:AssumeRole\u0026#34;,\r\u0026#34;Resource\u0026#34;: [\r\u0026#34;arn:aws:iam::\u0026lt;your_AWS_account_id\u0026gt;:role/workshop1-role\u0026#34;,\r]\r}\r} Chọn nút Next. Thay \u0026lt;your_AWS_account_id\u0026gt; thành id của bạn. Ví dụ: arn:aws:iam::030444900838:role/workshop1-role.\nỞ Step 2: Nhập Policy name: AssumeRoleWorkshop1. Chọn nút Create policy. Bạn đã hoàn thành việc cấp quyền cho user assume role, bước cuối cùng là đăng nhập vào user và đổi sang role cho workshop.\n"
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/vi/3-batchtranslation/",
+	"title": "Dịch tài liệu với asynchronous Batch Translation",
+	"tags": [],
+	"description": "",
+	"content": "Giới thiệu về asynchronous batch translation Asynchronous chỉ những công việc xảy ra không cùng lúc, batch là 1 tập hợp các objects/files.\nAsynchronous batch translation là 1 dạng dịch được Amazon Translate cung cấp để dịch nhiều tài liệu cùng 1 lúc (tổng size lên đến 5GB).\nMỗi tài liệu không quá 20 MB.\nKhông quá 1 triệu ký tự mỗi tài liệu.\nKhông quá 1 triệu tài liệu mỗi batch.\nTa sẽ tạo 1 job để yêu cầu Amazon Translate dịch cho ta, kết quả sau đó được lưu trong S3 bucket.\nNội dung Tạo batch job Xem kết quả "
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/vi/4-serverlesstranslation/4.3-combine/",
+	"title": "Quá trình Combine",
+	"tags": [],
+	"description": "",
+	"content": "\nTổng quan Quá trình combine được diễn ra cuối cùng để ghép các files đã dịch ở translated bucket thành 1 file như file gốc. Nhận events đã có files đã dịch xong, combine function sẽ xử lý, gộp lại các files để thành 1 file và trả về Final Translated bucket. Nội dung Thêm trigger Cấu hình function "
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/vi/2-prerequiste/2.3-createlambda/",
+	"title": "Tạo Lambda functions",
+	"tags": [],
+	"description": "",
+	"content": " Trong bước này, chúng ta sẽ tạo các lambda functions và tạo role để nó có thể nói chuyện với các services khác.\nNội dung Tạo lambda functions Cấp quyền cho lambda function "
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/vi/4-serverlesstranslation/",
+	"title": "Dịch tài liệu với Serverless Translation",
+	"tags": [],
+	"description": "",
+	"content": "Tổng quan kiến trúc như sau:\nNội dung: Quá trình Batching Quá trình Translate Quá trình Combine Tải file lên kiểm tra "
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/vi/2-prerequiste/2.1-createiam/2.1.4-switchrole/",
+	"title": "Truy cập vào user và đổi sang role cho workshop",
+	"tags": [],
+	"description": "",
+	"content": "Truy cập vào user Ở góc trên bên phải tài khoản hiện tai, Chọn nút Sign Out. Nhập những thông tin đã lưu của user workshop để đăng nhập vào. Sau khi login vào được, tài khoản đấy chưa làm được workshop, ta phải switch Role. Đổi sang role cho workshop Ở AWS management console: Chọn thông tin user ở góc trên bên phải màn hình. Chọn nút Switch role. Nhập những thông tin cần thiết vào: Account: Nhập Account ID Role: Nhập tên Role trong account đó. Ví dụ: workshop1-role. Lưu ý: kiểm tra kỹ tên role chính xác, sai thì sẽ không switch role được. Display Name sẽ tự động có. Chọn màu phân biệt Role. Bấm nút Switch Role. Sau khi Switch Role thành công thì ta sẽ thấy có màu của Role trên thông tin user đó và thử truy cập vào những dịch vụ được quyền vào. Chúng ta đã hoàn thành xong thiết lập IAM để làm workshop này. Chúng ta sẽ bắt đầu với việc tạo S3 bucket. "
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/vi/4-serverlesstranslation/4.4-testing/",
+	"title": "Xem kết quả",
+	"tags": [],
+	"description": "",
+	"content": " Tải lên 1 đoạn văn của AWS Blogs từ máy tính: Đoạn văn có 3056 ký tự nên khi batching thì nó vẫn là 1 file. Vào batching-bucket-\u0026lt;your_id\u0026gt;: Chọn nút Upload Kiếm tra trước khi upload: File có lưu lượng 3 KB. Chọn nút Upload Sau khi thành công sẽ có 1 dòng màu xanh: Sau đó, bạn vào bucket final-translated-bucket-\u0026lt;your_id\u0026gt;: Chọn file có chữ translated ở đầu và tên file ở sau. Tải về và kiểm tra blog đã dịch xong. Ok, vậy ta đã dịch thành công 1 đoạn blog từ tiếng Anh sang Việt rồi. Bạn vẫn có thể tải lên 2 tài liệu cùng 1 lúc và nó vẫn trả về 2 files đã dịch cho 2 tài liệu đó. Bạn hãy thử xem nhé.\n"
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/vi/5-cleanup/",
+	"title": "Dọn dẹp tài nguyên lab",
+	"tags": [],
+	"description": "",
+	"content": "S3 Xóa các buckets đã tạo Ta cần xóa 4 buckets: batching-bucket, batched-bucket, translated-bucket, final-translated-bucket.\nLàm theo 4 bước sau để xóa 1 bucket. Làm tương tự cho 3 buckets còn lại.\nVào 1 bucket đã tạo: Xóa các objects (files) trước. Chọn tất cả các files. Chọn nút Delete. Nhập vào permanently delete Chọn nút Delete objects. Thoát ra ngoài giao diện S3: Chọn bucket muốn xóa. Chọn nút Delete Nhập tên bucket muốn xóa vào để xác nhận. Chọn Delete bucket. Lambda Ta cần xóa 3 functions: batchingFunction, combineFunction, translationFunction.\nLàm theo 2 bước sau để xóa 1 function. Làm tương tự cho 2 functions còn lại.\nChọn 1 bucket cần xóa. Vào Actions. Chọn Delete Nhập delete. Chọn nút Delete. Translate Trong Batch translation thì ta không xóa được job đã hoàn thành.\nNó chỉ có 3 nút Copy để sao chép job hiện tại, Stop để dừng 1 job đang chạy, Create job để tạo job mới. Cloudwatch Truy cập vào Cloudwatch: Chọn Log groups. Chọn log của 1 hàm ta đã tạo. Trong mục log streams: Chọn hết các logs. Chọn nút Delete. IAM Xóa user ta đã tạo: Chọn user: workshop-1-user. Chọn nút Delete. Nhập tên user lại để xác nhận. Chọn nút Delete user. Xóa role ta đã tạo: Chọn role: workshop1-role. Chọn nút Delete. Nhập tên role lại để xác nhận. Chọn nút Delete. Ngoài ra còn những role khác ta đã tạo, bạn có thể làm tương tự để xóa. "
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/vi/6-reference/",
+	"title": "Đọc thêm và ý tưởng",
+	"tags": [],
+	"description": "",
+	"content": "Đọc thêm https://aws.amazon.com/blogs/compute/translating-documents-at-enterprise-scale-with-serverless/ https://docs.aws.amazon.com/translate/latest/dg/what-is.html https://aws.amazon.com/blogs/machine-learning/translating-documents-with-amazon-translate-aws-lambda-and-the-new-batch-translate-api/ https://harshitdawar.medium.com/language-translation-api-using-aws-translate-8dc2230fba5b https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/translate.html https://aws.amazon.com/blogs/machine-learning/translating-your-website-or-application-automatically-with-amazon-translate-in-your-ci-cd-pipeline/ https://aws.amazon.com/blogs/compute/translating-content-dynamically-by-using-amazon-s3-object-lambda/ https://aws.amazon.com/blogs/machine-learning/create-a-serverless-pipeline-to-translate-large-documents-with-amazon-translate/ https://aws.amazon.com/translate/pricing/ https://aws.amazon.com/translate/faqs/ https://aws.amazon.com/blogs/machine-learning/customize-amazon-translate-output-to-meet-your-domain-and-organization-specific-vocabulary/ Ý tưởng Ở workshop tiếp theo về Amazon Translate, ta sẽ tìm hiểu, thực hành customize your translations.\nĐồng thời tham khảo kiến trúc này để cải thiện serverless translation. Ngoài ra, ta có thể kết hợp với Amazon Polly để chuyển đổi text-to-speech.\nĐó là những ý tưởng cho workshop tiếp theo về amazon translate.\n"
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/vi/categories/",
+	"title": "Categories",
+	"tags": [],
+	"description": "",
+	"content": ""
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/vi/tags/",
+	"title": "Tags",
+	"tags": [],
+	"description": "",
+	"content": ""
+}]

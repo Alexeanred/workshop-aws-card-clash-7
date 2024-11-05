@@ -1,0 +1,225 @@
+[
+{
+	"uri": "https://alexeanred.github.io/ws1/4-serverlesstranslation/4.1-batching/4.1.1-trigger/",
+	"title": "Add trigger to batching function",
+	"tags": [],
+	"description": "",
+	"content": " Access the batching function in Lambda initialized in step 2: Select Add trigger. In the search bar: Enter S3. In Trigger configuration: Bucket: batching-bucket-\u0026lt;your_id\u0026gt;. Event types: default: All object create events. Tick: I acknowledge that \u0026hellip;. Select the Add button. You have successfully added a trigger to the function.\n"
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/4-serverlesstranslation/4.3-combine/4.3.1-trigger/",
+	"title": "Add trigger to combine function",
+	"tags": [],
+	"description": "",
+	"content": " Access the combine function in Lambda initialized in step 2: Select Add trigger. In the search bar: Enter S3. In Trigger configuration: Bucket: translated-bucket-\u0026lt;your_id\u0026gt;. Event types: default: All object create events. Tick: I acknowledge that \u0026hellip;. Select the Add button. You have successfully added a trigger to the function.\n"
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/4-serverlesstranslation/4.2-translate/4.2.1-trigger/",
+	"title": "Add trigger to translate function",
+	"tags": [],
+	"description": "",
+	"content": " Access the translate function in Lambda initialized in step 2: Select Add trigger. In the search bar: Enter S3. In Trigger configuration: Bucket: batched-bucket-\u0026lt;your_id\u0026gt;. Event types: default: All object create events. Tick: I acknowledge that \u0026hellip;. Select the Add button. You have successfully added a trigger to the function\n"
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/",
+	"title": "Amazon Translate",
+	"tags": [],
+	"description": "",
+	"content": "TRANSLATE AWS BLOGS FASTER WITH AMAZON TRANSLATE Overview In this lab, you will learn how to use Amazon Translate by practicing two methods to translate text from English to Vietnamese.\nThe first method is batch translation: The advantage is that it is easy to set up, the disadvantage is that the translation waiting time is quite long. The second method is serverless translation: The advantage is that the translation time is fast, almost real time, the disadvantage is that the setup is more difficult. The amulet wrote: \u0026ldquo;Life does not lack good people, it only lacks those who persevere to the end.\u0026rdquo; So please persevere in completing this lab =)) Content Introduction Preparation Batch Translation Serverless Translation Resource cleanup References and idea "
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/4-serverlesstranslation/4.1-batching/",
+	"title": "Batching process",
+	"tags": [],
+	"description": "",
+	"content": "\nOverview Description Limit Character encoding UTF-8 Maximum input text 10,000 bytes Maximum number of characters per document 100,000 Amazon Translate real-time limit is 10,000 bytes equivalent to 10 Kb per API call.\nSo in order not to exceed the size limit, we must divide files over 10 Kb into smaller ones.\nThe batching process helps us do that, one file can be divided into many files.\nThe user will upload files to the Batching bucket, the Batching function receives events, processes and returns the files to the Batched bucket.\nContent Add trigger Function configuration "
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/3-batchtranslation/3.1-batchjob/",
+	"title": "Create batch translation job",
+	"tags": [],
+	"description": "",
+	"content": " In the console, in the search bar, enter Translate. In the Translate interface: Select Batch translation. Select the Create job button. In Create Translate Job: In the Name section, enter MyTranslateJob. Select source language: English. Select target language: Vietnamese. In the Input data section: Select the Select folder button. Access the directory path in the input bucket: s3://translate-job-batch-input-150903/raw/. Select File format: Plain text (.txt). Access the directory path in the output bucket: s3://translate-job-batch-output-150903/output/. Your data is encrypted by default. We must grant Translate permission to access S3 buckets: Select to create a new IAM role Create an IAM role. In the IAM role section: Select Input and output S3 buckets if you want to only give Translate access to these 2 buckets. If you want all buckets, select Any S3 bucket. Name the role name: AllowAccessS3InputOutput Select the Create job button. If you have selected Create job and get this error, it is because you do not have a file in the raw directory of the input bucket. You must upload the file to be translated before creating a job.\nAccess the input bucket and go to the raw folder, download the .txt files you want to translate. If you have uploaded the file and still have the error, it is because you have previously created an IAM Role with that name. To Create job successfully, you need to name the role differently or refresh the page to Translate knows the role exists and can be used. After you select Create job, the job will be in progress status until the job is completed. You can see the status and configurations we have made when you click. Amazon Translate does not charge you if you select the same language for \u0026ldquo;source language\u0026rdquo; and \u0026ldquo;target language\u0026rdquo;. If you select the \u0026ldquo;auto\u0026rdquo; mode that automatically detects the language, you will be charged for that portion.\nYou should create S3 buckets and put the files to be translated before putting the URI into the translate job.\nIf you get an error that S3 buckets cannot be found, it may be because you created that S3 bucket in a different region than the region where translate is running.\n"
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/2-prerequiste/2.1-createiam/",
+	"title": "Create IAM user and IAM role",
+	"tags": [],
+	"description": "",
+	"content": "In this step, we will create a user for the workshop and assign a role containing the necessary policies. We follow best practices of least privilege.\nThe architectural overview after you complete this step will be as follows:\nYou can also refer to this lab on aws study group:\nIntroduction to IAM Content Create workshop user Create workshop role Grant user assume role permission Access the user and change to the role for the workshop "
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/2-prerequiste/2.3-createlambda/2.3.1-lambdafunction/",
+	"title": "Create Lambda functions",
+	"tags": [],
+	"description": "",
+	"content": "Create lambda function In the console, go to the search bar, enter lambda: After entering the lambda, select the Create function button. In Create function: Select Author from stratch. Enter function name: batchingFunction. Select Runtime: Python 3.12. Select architecture: _x86_64. Select the Create function button. Do the same 3 steps above to create the following 3 functions: batchingFunction translateFunction combineFunction So, we have created the lambda functions, the next step is to create roles so that the lambda has access to other resources. "
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/2-prerequiste/2.2-creates3/2.2.1-s3batch/",
+	"title": "Create S3 buckets for batch translation",
+	"tags": [],
+	"description": "",
+	"content": "Create S3 bucket for input On the console, go to the search bar, enter S3 to access Amazon S3: In S3, select the Create bucket button to create a new bucket: In Create Bucket: Select AWS Region: Singapore (ap-southeast-1). Enter bucket name: translate-job-batch-input-\u0026lt;your_id\u0026gt;. For example: translate-job-batch-input-150903. Choose your own id so it doesn\u0026rsquo;t overlap with the names of other buckets on Amazon S3.\nLeave other parameters as default, select Create Bucket button. After the bucket is successfully created, access the bucket. Then, select the Create folder button. In Create folder: Enter folder name: raw. Then, select the Create folder button. Create S3 bucket for output In S3, select the Create bucket button to create a new bucket: In Create Bucket: Select AWS Region: Singapore (ap-southeast-1). Enter bucket name: translate-job-batch-output-\u0026lt;your_id\u0026gt;. For example: translate-job-batch-output-150903. Choose your own id so it doesn\u0026rsquo;t overlap with the names of other buckets on Amazon S3.\nLeave other parameters as default, select Create Bucket button. After the bucket is successfully created, access the bucket. Then, select the Create folder button. In Create folder: Enter folder name: output. Then, select the Create folder button. You have finished creating 2 buckets for batch translation.\n"
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/2-prerequiste/2.1-createiam/2.1.1-createuser/",
+	"title": "Create workshop user ",
+	"tags": [],
+	"description": "",
+	"content": "Create workshop IAM user Access the console: Go to the search bar. Type IAM. In page IAM. Select item user. Select button Create user. In Step 1: Type user name: workshop-1-user. Check Provide user access to the AWS Management Console. Choose user type: I want to create an IAM user. Choose custom password: nhập password cho user đó. Uncheck Users must create a new password at next sign-in. Choose button Next. In Step 2, choose Add user to group. Choose button Next. In Step 3, review information and choose button Create user. In Step 4, Copy the necessary information to log in to the user. You have created the user for workshop 1, next is to create the workshop role. "
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/1-introduce/",
+	"title": "Introduction",
+	"tags": [],
+	"description": "",
+	"content": "Amazon Translate is a Neural Machine Translation (MT) service that translates text between languages supported by the service. The service provides high-quality, affordable, and customizable language translations, allowing developers to translate company- and user-generated content or build applications that require support on many languages.\nSome popular use cases: In companies, applications include meeting notes, technical reports,\u0026hellip; Translate emails, in-game chats, chats with customers,\u0026hellip; Supports translation in over 75 languages. Input is text in UTF-8 format. Reference fee table: Translation Type Pricing Free Tier Standard Text Translation $15.00 per million characters 2 million characters per month for 12 months Batch Document Translation $15.00 per million characters 2 million characters per month for 12 months Real-Time Document Translation (Text \u0026amp; HTML) $15.00 per million characters No Free Tier for this service Real-Time Document Translation (Docx) $30.00 per million characters No Free Tier for this service Active Custom Translation $60.00 per million characters 500,000 characters per month for 2 months Amazon S3 is an object storage service that provides on-demand scalability, ensuring the highest level of data availability, security and performance.\nIn this lab, S3 is used as a place to store documents before and after translation and as a \u0026ldquo;trigger\u0026rdquo; to run the \u0026ldquo;lambda function\u0026rdquo;. AWS Lambda is a \u0026ldquo;serverless compute\u0026rdquo; service that allows you to run applications without creating or managing servers. You organize your application into Lambda functions. Lambda functions run only when needed and are capable of auto-scaling. You only pay for the compute time you use — AWS doesn\u0026rsquo;t charge you while your application is not running.\nIn this lab, the \u0026ldquo;lambda function\u0026rdquo; is written in Python and will process the documents to best complete the translation process. Amazon Cloudwatch is a \u0026ldquo;monitoring\u0026rdquo; service that monitors resources and applications running on AWS.\nIn this lab, Cloudwatch is used to monitor the operation of the lambda function and S3 bucket, from there we can fix errors and debug to help the serverless architecture work better. AWS IAM is a tool within AWS that allows you to securely control access to your AWS resources. You can use IAM to control authentication in the login process and authorization in resource usage.\nIn this lab, IAM is used to manage user creation and granting rights and roles to users and also granting permissions to lambda functions. "
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/4-serverlesstranslation/4.1-batching/4.1.2-function/",
+	"title": "Configure Batching function",
+	"tags": [],
+	"description": "",
+	"content": " In batching function: In the Code section: Enter the following code: import boto3 import json import os s3 = boto3.client(\u0026#39;s3\u0026#39;) MAX_CHARS = 9500 def lambda_handler(event, context): print(json.dumps(event, indent=2)) output_bucket = os.environ.get(\u0026#39;OutputBucket\u0026#39;) if not output_bucket: return print(\u0026#39;Error: OutputBucket not defined\u0026#39;) for record in event[\u0026#39;Records\u0026#39;]: try: do_batching(record, output_bucket) except Exception as e: print(f\u0026#39;Handler error: {e}\u0026#39;) def split_into_sentences(text): sentences = [] start = 0 for i, char in enumerate(text): if char in [\u0026#39;.\u0026#39;, \u0026#39;!\u0026#39;, \u0026#39;?\u0026#39;] and i \u0026gt; 0 and text[i - 1] not in [\u0026#39;.\u0026#39;, \u0026#39;!\u0026#39;, \u0026#39;?\u0026#39;]: sentences.append(text[start:i + 1]) start = i + 1 if start \u0026lt; len(text): sentences.append(text[start:]) return sentences def do_batching(event, output_bucket): original_text = s3.get_object( Bucket=event[\u0026#39;s3\u0026#39;][\u0026#39;bucket\u0026#39;][\u0026#39;name\u0026#39;], Key=event[\u0026#39;s3\u0026#39;][\u0026#39;object\u0026#39;][\u0026#39;key\u0026#39;] ) print(\u0026#39;Downloaded object from S3\u0026#39;) text = original_text[\u0026#39;Body\u0026#39;].read().decode(\u0026#39;utf-8\u0026#39;) print(f\u0026#39;Original text length: {len(text)}\u0026#39;) sentences = split_into_sentences(text) counter = 0 while sentences: counter += 1 batch_text = \u0026#39;\u0026#39; while sentences and len(batch_text) + len(sentences[0]) \u0026lt;= MAX_CHARS: batch_text += sentences.pop(0) + \u0026#39; \u0026#39; new_key = event[\u0026#39;s3\u0026#39;][\u0026#39;object\u0026#39;][\u0026#39;key\u0026#39;].replace(\u0026#39;.txt\u0026#39;, f\u0026#39;-{counter}.txt\u0026#39;) result = s3.put_object( Bucket=output_bucket, Key=new_key, Body=batch_text.strip(), ContentType=\u0026#39;text/plain\u0026#39; ) print(f\u0026#39;S3 result: {json.dumps(result, indent=2)}\u0026#39;) # Entry point for local testing if __name__ == \u0026#39;__main__\u0026#39;: sample_event = { \u0026#34;Records\u0026#34;: [ { \u0026#34;s3\u0026#34;: { \u0026#34;bucket\u0026#34;: { \u0026#34;name\u0026#34;: \u0026#34;example-bucket\u0026#34; }, \u0026#34;object\u0026#34;: { \u0026#34;key\u0026#34;: \u0026#34;example.txt\u0026#34; } } } ] } lambda_handler(sample_event, None) Explanation: Limit the number of characters per file to no more than 9500 characters. Create a function to divide paragraphs into sentences. Then, combine the sentences and return the files to the batched bucket. Then, select the Deploy button to have the function update to the latest code. Then, go to Configuration: Select Environment variables. Select the Edit button. In Environment variables: Select the button: Add environment variable. In Key: enter OutputBucket. In Value: enter batched-bucket-\u0026lt;your_id\u0026gt;. Select the Save button. To test the newly created function: Select the test button. Select Create new event. Event name: enter test In Event JSON: Enter: { \u0026#34;Records\u0026#34;: [ { \u0026#34;s3\u0026#34;: { \u0026#34;bucket\u0026#34;: { \u0026#34;name\u0026#34;: \u0026#34;batching-bucket-\u0026lt;your_id\u0026gt;\u0026#34; }, \u0026#34;object\u0026#34;: { \u0026#34;key\u0026#34;: \u0026#34;IELST-reading2.txt\u0026#34; } } } ] } Above: bucket name is the name of the bucket we uploaded the translation file to (batching bucket), object key is the uploaded file we want to translate. Select the Save button and then you can test. After testing, you can access cloudwatch to view the log of the request we sent to test: Select Monitor. Select View Cloudwatch logs. Select log streams to view the log and refresh if there is a new log sent in. Hooray!!! You have finished configuring the batching function.\n"
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/4-serverlesstranslation/4.3-combine/4.3.2-function/",
+	"title": "Configure Combine function",
+	"tags": [],
+	"description": "",
+	"content": " In combine function:\nIn the Code section: Enter the following code: import boto3 import json import os s3 = boto3.client(\u0026#39;s3\u0026#39;) def combine_content(files): # Combine the content of multiple files combined_content = \u0026#39;\u0026#39; for file_content in files: combined_content += file_content + \u0026#34;\\n\\n\u0026#34; return combined_content def group_keys_by_pattern(key_names, pattern): grouped_keys = {pattern: []} for key_name in key_names: if pattern in key_name: grouped_keys[pattern].append(key_name) return grouped_keys def sample_event_func(input_key_name): # Initialize the S3 client s3 = boto3.client(\u0026#39;s3\u0026#39;) # If key_names is not provided, retrieve key names from the bucket # Specify the bucket name bucket_name = os.environ.get(\u0026#39;OutputBucket\u0026#39;) try: # List objects within the bucket response = s3.list_objects_v2(Bucket=bucket_name) # Extract key names from the response if \u0026#39;Contents\u0026#39; in response: key_names = [obj[\u0026#39;Key\u0026#39;] for obj in response[\u0026#39;Contents\u0026#39;]] print(key_names) else: print(\u0026#34;No objects found in the bucket.\u0026#34;) return except Exception as e: print(f\u0026#34;Error: {e}\u0026#34;) return # Extract pattern from the input key name parts = input_key_name.rsplit(\u0026#34;-\u0026#34;, 1) print(parts) if len(parts) \u0026gt; 1 and parts[1].rsplit(\u0026#34;.\u0026#34;, 1)[0].isdigit(): # Check if the part on the right is not a number pattern = parts[0] # Use the part on the left as pattern else: pattern = input_key_name # Use the entire input_key_name as pattern print(pattern) # Group key names based on the extracted pattern grouped_keys = group_keys_by_pattern(key_names, pattern) print(grouped_keys) # Create sample event containing keys with similar pattern sample_event = { \u0026#34;Records\u0026#34;: [ { \u0026#34;s3\u0026#34;: { \u0026#34;bucket\u0026#34;: { \u0026#34;name\u0026#34;: os.environ.get(\u0026#39;OutputBucket\u0026#39;) }, \u0026#34;object\u0026#34;: { \u0026#34;key\u0026#34;: key_name } } } for key_name in grouped_keys[pattern] ] } return sample_event def lambda_handler(event, context): # Specify the bucket name bucket_name = os.environ.get(\u0026#39;OutputBucket\u0026#39;) print(event) # List to store the content of all files key_name = event[\u0026#39;Records\u0026#39;][0][\u0026#39;s3\u0026#39;][\u0026#39;object\u0026#39;][\u0026#39;key\u0026#39;] print(key_name) file_contents = [] files_to_delete = [] sample_events = sample_event_func(key_name) # Check if sample_events is empty if not sample_events: return { \u0026#39;statusCode\u0026#39;: 205, \u0026#39;body\u0026#39;: \u0026#39;File not found in the bucket\u0026#39; } if not sample_events[\u0026#39;Records\u0026#39;]: print(\u0026#34;No sample events generated.\u0026#34;) return { \u0026#39;statusCode\u0026#39;: 206, \u0026#39;body\u0026#39;: \u0026#39;Exit the lambda_handler because the records has been handled\u0026#39; } print(sample_events) # Loop through each record in the event for record in sample_events[\u0026#39;Records\u0026#39;]: print(record) # # Extract the bucket and file key from the record bucket = record[\u0026#39;s3\u0026#39;][\u0026#39;bucket\u0026#39;][\u0026#39;name\u0026#39;] key = record[\u0026#39;s3\u0026#39;][\u0026#39;object\u0026#39;][\u0026#39;key\u0026#39;] # tan dung bucket de lay key name # Retrieve the content of the file file_obj = s3.get_object(Bucket=bucket, Key=key) # Extract the content from the file object file_content = file_obj[\u0026#39;Body\u0026#39;].read().decode(\u0026#39;utf-8\u0026#39;) print(file_content) file_contents.append(file_content) # Append the content to the combined content # combined_content += file_content + \u0026#34;\\n\\n\u0026#34; # print(\u0026#34;Day la combine lan \u0026#34;,count) # print(combined_content) files_to_delete.append({\u0026#39;Key\u0026#39;: key, \u0026#39;Bucket\u0026#39;: bucket}) print(files_to_delete) # count+=1 print(file_contents) # # Write the combined content to a new file combined_content = combine_content(file_contents) print(\u0026#34;Key hien tai la: \u0026#34;, key) copy_k = key parts = copy_k.rsplit(\u0026#34;-\u0026#34;, 1) print(parts) if len(parts) \u0026gt; 1 and parts[1].rsplit(\u0026#34;.\u0026#34;, 1)[0].isdigit(): # Check if the part on the right is not a number combined_key = parts[0] + \u0026#34;.txt\u0026#34; # Use the part on the left as pattern else: combined_key = copy_k # Use the entire input_key_name as pattern #combined_key= \u0026#34;new_ielst.txt\u0026#34; print(\u0026#34;Key sau khi chinh sua la: \u0026#34;, combined_key) s3.put_object(Bucket=os.environ.get(\u0026#39;NewBucket\u0026#39;), Key=combined_key, Body=combined_content.encode(\u0026#39;utf-8\u0026#39;)) # Delete the original files print(\u0026#34;Files of delete: \u0026#34;,files_to_delete) for file_to_delete in files_to_delete: print(file_to_delete) s3.delete_object(Bucket=file_to_delete[\u0026#39;Bucket\u0026#39;], Key=file_to_delete[\u0026#39;Key\u0026#39;]) print(\u0026#34;Deleted file \u0026#34;,file_to_delete[\u0026#39;Key\u0026#39;]) return { \u0026#39;statusCode\u0026#39;: 200, \u0026#39;body\u0026#39;: \u0026#39;Files combined successfully!\u0026#39; } # Entry point for local testing if __name__ == \u0026#39;__main__\u0026#39;: sample_event = { \u0026#34;Records\u0026#34;: [ { \u0026#34;s3\u0026#34;: { \u0026#34;bucket\u0026#34;: { \u0026#34;name\u0026#34;: \u0026#34;example-bucket\u0026#34; }, \u0026#34;object\u0026#34;: { \u0026#34;key\u0026#34;: \u0026#34;example.txt\u0026#34; } } }, { \u0026#34;s3\u0026#34;: { \u0026#34;bucket\u0026#34;: { \u0026#34;name\u0026#34;: \u0026#34;example-bucket\u0026#34; }, \u0026#34;object\u0026#34;: { \u0026#34;key\u0026#34;: \u0026#34;example1.txt\u0026#34; } } } ] } lambda_handler(sample_event, None) Explanation: We will reconfigure events with a function to receive the name of the event\u0026rsquo;s object. Then, the function will look for characteristics to find files with the same format to create an event containing the names of those objects and combine them. Thus, when translating multiple documents at once, there will be no error of not being able to find the correct files to combine. Then, select the Deploy button to have the function update to the latest code. Then, go to Configuration:\nSelect Environment variables. Select the Edit button. In Environment variables:\nSelect the button: Add environment variable. In Key: enter OutputBucket. In Value: enter translated-bucket-\u0026lt;your_id\u0026gt;. Select the button: Add environment variable. In Key: enter NewBucket. In Value: enter final-translated-bucket-\u0026lt;your_id\u0026gt;. Select the Save button. You can access cloudwatch to view the log of the request we sent:\nSelect Monitor. Select View Cloudwatch logs. Select log streams to view the log and refresh if there is a new log sent in. Hooray!!! You have finished configuring the combine function.\n"
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/4-serverlesstranslation/4.2-translate/4.2.2-function/",
+	"title": "Configure Translate function",
+	"tags": [],
+	"description": "",
+	"content": " In translate function: In the Code section: Enter the following code: import boto3 import os import json s3_client = boto3.client(\u0026#39;s3\u0026#39;) translate = boto3.client(\u0026#39;translate\u0026#39;) def translate_text(text, lang_code): result = translate.translate_text( Text=text, SourceLanguageCode=\u0026#39;auto\u0026#39;, TargetLanguageCode=lang_code ) return result[\u0026#39;TranslatedText\u0026#39;] def lambda_handler(event, context): for record in event[\u0026#39;Records\u0026#39;]: bucket_name = record[\u0026#39;s3\u0026#39;][\u0026#39;bucket\u0026#39;][\u0026#39;name\u0026#39;] file_key = record[\u0026#39;s3\u0026#39;][\u0026#39;object\u0026#39;][\u0026#39;key\u0026#39;] output_bucket = os.environ.get(\u0026#39;OutputBucket\u0026#39;) # Output bucket for translated files print(f\u0026#34;Translating file: {file_key}\u0026#34;) # Get the object from S3 obj = s3_client.get_object(Bucket=bucket_name, Key=file_key) text = obj[\u0026#39;Body\u0026#39;].read().decode(\u0026#39;utf-8\u0026#39;) # Translate the text translated_text = translate_text(text, \u0026#39;vi\u0026#39;) # Upload translated content to S3 output_key = f\u0026#34;translated_{file_key}\u0026#34; # You may want to adjust the naming convention s3_client.put_object(Body=translated_text.encode(\u0026#39;utf-8\u0026#39;), Bucket=output_bucket, Key=output_key) print(f\u0026#34;Translation completed for {file_key}\u0026#34;) print(\u0026#34;All files translated and uploaded to S3\u0026#34;) Explanation: Create a function to translate the paragraph by calling the translate API The lambda_handler function is used to receive events and process them so that the results appear in the translated bucket. Then, select the Deploy button to have the function update to the latest code. Then, go to Configuration: Select Environment variables. Select the Edit button. In Environment variables: Select the button: Add environment variable. In Key: enter OutputBucket. In Value: enter translated-bucket-\u0026lt;your_id\u0026gt;. Select the Save button. To test the newly created function: Select the test button. Select Create new event. Event name: enter test In Event JSON: Enter: {\r\u0026#34;Records\u0026#34;: [\r{\r\u0026#34;s3\u0026#34;: {\r\u0026#34;bucket\u0026#34;: {\r\u0026#34;name\u0026#34;: \u0026#34;batched-bucket-\u0026lt;your_id\u0026gt;\u0026#34;\r},\r\u0026#34;object\u0026#34;: {\r\u0026#34;key\u0026#34;: \u0026#34;IELST-reading2-1.txt\u0026#34;\r}\r}\r}\r]\r} Above: bucket name is the name of the bucket we have files that have gone through the batching process (batched bucket), object key is a file in that bucket. Select the Save button and then you can test. After testing, you can access cloudwatch to view the log of the request we sent to test: Select Monitor. Select View Cloudwatch logs. Select log streams to view the log and refresh if there is a new log sent in. Hooray!!! You have finished configuring the translate function.\n"
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/2-prerequiste/2.2-creates3/",
+	"title": "Create S3 buckets",
+	"tags": [],
+	"description": "",
+	"content": " In this step, we will create s3 buckets for both batch translation and serverless translation.\nContent Create s3 bucket for batch translation Create s3 bucket for serverless translation "
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/2-prerequiste/2.2-creates3/2.2.2-s3serverless/",
+	"title": "Create S3 buckets for serverless translation",
+	"tags": [],
+	"description": "",
+	"content": "Create s3 buckets for serverless translation In S3, select the Create bucket button to create a new bucket: In Create Bucket: Select AWS Region: Singapore (ap-southeast-1). Enter bucket name: batching-bucket-\u0026lt;your_id\u0026gt;. For example: batching-bucket-150903. Choose your own id so it doesn\u0026rsquo;t overlap with the names of other buckets on Amazon S3.\nLeave other parameters as default, select Create Bucket button. Do the same as the 3 steps above to successfully create 4 buckets as follows: batching-bucket-\u0026lt;your_id\u0026gt; batched-bucket-\u0026lt;your_id\u0026gt; translated-bucket-\u0026lt;your_id\u0026gt; final-translated-bucket-\u0026lt;your_id\u0026gt; Hooray! You have finished creating S3 buckets, next prepare the lambda functions.\n"
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/2-prerequiste/2.1-createiam/2.1.2-createrole/",
+	"title": "Create workshop role",
+	"tags": [],
+	"description": "",
+	"content": "Create Role In page IAM: Choose item Roles. Choose button Create role. In Step 1: Choose AWS account. Choose This account. Click button Next. In Step 2: Copy these policy names, go to the search bar and tick select: AmazonS3FullAccess AWSLambda_FullAccess CloudWatchFullAccess IAMFullAccess TranslateFullAccess Click button Next. In step 3: Type role name: workshop1-role. Review the Trust policy to see if the role is allowed on this account. Review the rights you have granted to the role through policy names. Add tags if needed and select the button Create role. You have finished creating roles for workshop users. "
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/2-prerequiste/2.3-createlambda/2.3.2-lambdarole/",
+	"title": "Grant permissions to Lambda functions",
+	"tags": [],
+	"description": "",
+	"content": "Create Lambda role Access IAM: Select Roles. Select the Create role button. In step 1: Select AWS service. In the Use case section, in Service or use case: Select Lambda. Select the Next button. In Step 2: Add the following permissions to the search bar and tick: AmazonS3FullAccess, CloudWatchFullAccess, TranslateFullAccess. In Step 3: Enter Role name: AllowLambdaFunctionWorkshop1. Review the information and select the Create role button. Assign roles to lambda functions Access the lambda function again and choose a function to assign a role: After selecting batchingFunction: select Configuration. select Permissions. select the Edit button. In Edit, in the Existing role section: Select the newly created role name in IAM role: AllowLambdaFunctionWorkshop1. Select the Save button. Check the Role name in that function and do the same with the remaining 2 functions. You have completed the settings to use lambda functions. "
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/2-prerequiste/",
+	"title": "Preparation",
+	"tags": [],
+	"description": "",
+	"content": "To prepare for the following parts, in part 2, we will create some resources to grant permissions, create a place to store documents, and create logic functions to process documents.\nContent Create IAM user and IAM role Create S3 bukets Create Lambda functions "
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/3-batchtranslation/3.2-review/",
+	"title": "See the results and how to run the job again",
+	"tags": [],
+	"description": "",
+	"content": "See results After running the job, the status will change to Completed. Now you can go to the S3 output bucket to see the results. When entering the S3 output bucket, select the output folder. Select the folder starting with your account id: Select a translated file: Translated into Vietnamese so the beginning of the file is vi. Click the Open or Download button to view. How to rerun job Go back to the job in Batch Translation: Select the Copy button. It will automatically reconfigure the job as before and the name has the word copy added You can reuse the old role if you want to use 2 old buckets. "
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/4-serverlesstranslation/4.2-translate/",
+	"title": "Translate process",
+	"tags": [],
+	"description": "",
+	"content": "\nOverview After receiving events, objects have been put into the batched-bucket bucket. Translation function will send the text in those files to Amazon Translate for translation, then Amazon Translate\u0026rsquo;s API will return the translated text. Translated files are put into Translated bucket. Content Add trigger Function configuration "
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/4-serverlesstranslation/4.3-combine/",
+	"title": "Combine process",
+	"tags": [],
+	"description": "",
+	"content": "\nOverview The combine process takes place finally to combine the translated files in the translated bucket into 1 file like the original file. Receive events that already have translated files, the combine function will process, combine the files into 1 file and return the Final Translated bucket. Content Add trigger Function configuration "
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/2-prerequiste/2.3-createlambda/",
+	"title": "Create Lambda functions",
+	"tags": [],
+	"description": "",
+	"content": " In this step, we will create lambda functions and create roles so that it can talk to other services.\nContent Create lambda functions Authorize lambda function "
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/2-prerequiste/2.1-createiam/2.1.3-assumerole/",
+	"title": "Grant permissions to the user assume role",
+	"tags": [],
+	"description": "",
+	"content": "Grant permissions to the user Access the user workshop-1-user just created: Select the Add permissions button. Select Create inline policy. In Step 1: Select JSON. Copy and paste the following lines: {\r\u0026#34;Version\u0026#34;: \u0026#34;2012-10-17\u0026#34;,\r\u0026#34;Statement\u0026#34;: {\r\u0026#34;Effect\u0026#34;: \u0026#34;Allow\u0026#34;,\r\u0026#34;Action\u0026#34;: \u0026#34;sts:AssumeRole\u0026#34;,\r\u0026#34;Resource\u0026#34;: [\r\u0026#34;arn:aws:iam::\u0026lt;your_AWS_account_id\u0026gt;:role/workshop1-role\u0026#34;,\r]\r}\r} Click button Next. Replace \u0026lt;your_AWS_account_id\u0026gt; with your id. For example: arn:aws:iam::030444900838:role/workshop1-role.\nIn Step 2: Enter Policy name: AssumeRoleWorkshop1. Select the Create policy button. You have completed granting permission to the user assume role, the final step is to log in to the user and change to the role for the workshop.\n"
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/3-batchtranslation/",
+	"title": "Translate documents with asynchronous Batch Translation",
+	"tags": [],
+	"description": "",
+	"content": "Introducing asynchronous batch translation Asynchronous refers to tasks that do not happen at the same time, batch is a collection of objects/files.\nAsynchronous batch translation is a form of translation provided by Amazon Translate to translate multiple documents at the same time (total size up to 5GB).\nEach document must not exceed 20 MB.\nNo more than 1 million characters per document.\nNo more than 1 million documents per batch.\nWe will create a job to ask Amazon Translate to translate for us, the results will then be saved in the S3 bucket.\nContent Create batch job See results "
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/2-prerequiste/2.1-createiam/2.1.4-switchrole/",
+	"title": "Access the user and change to the role for the workshop",
+	"tags": [],
+	"description": "",
+	"content": "Access the user In the upper right corner of your current account, select the Sign Out button. Enter the saved information of the workshop user to log in. After logging in, that account cannot do the workshop yet, we must switch Role. Change to role for workshop In the AWS management console: Select user information in the upper right corner of the screen. Select the Switch role button. Enter the necessary information: Account: Enter Account ID Role: Enter the Role name in that account. For example: workshop1-role. Note: carefully check the role name is correct, otherwise the role will not be switched. Display Name will automatically appear. Choose a color to differentiate the Role. Click the Switch Role button. After the Role Switch is successful, we will see the color of the Role on that user\u0026rsquo;s information and try to access the services we are authorized to access. We have completed setting up IAM for this workshop. We\u0026rsquo;ll start with creating an S3 bucket. "
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/4-serverlesstranslation/",
+	"title": "Translate documents with Serverless Translation",
+	"tags": [],
+	"description": "",
+	"content": "The architectural overview is as follows:\nContent: Batching process Translate process Combine process Upload file to test "
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/4-serverlesstranslation/4.4-testing/",
+	"title": "View results",
+	"tags": [],
+	"description": "",
+	"content": " Upload a paragraph of AWS Blogs from your computer: The paragraph has 3056 characters so when batching it is still 1 file. Go to batching-bucket-\u0026lt;your_id\u0026gt;: Select the Upload button Check before uploading: File has a capacity of 3 KB. Select the Upload button After success, there will be a green line: Then, go to bucket final-translated-bucket-\u0026lt;your_id\u0026gt;: Select the file with the word translated at the beginning and the file name after it. Download and check the translated blog. Ok, so we have successfully translated a blog paragraph from English to Vietnamese. You can still upload 2 documents at the same time and it will still return 2 translated files for those 2 documents. Please try it.\n"
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/5-cleanup/",
+	"title": "Clean up lab resources",
+	"tags": [],
+	"description": "",
+	"content": "S3 Delete created buckets We need to delete 4 buckets: batching-bucket, batched-bucket, translated-bucket, final-translated-bucket.\nFollow these 4 steps to delete a bucket. Do the same for the remaining 3 buckets.\nGo to a created bucket: Delete objects (files) first. Select all files. Select the Delete button. Enter permanently delete Select the Delete objects button. Exit to S3 interface: Select the bucket you want to delete. Select the Delete button Enter the name of the bucket you want to delete to confirm. Select Delete bucket. Lambda We need to delete 3 functions: batchingFunction, combineFunction, translationFunction.\nFollow these 2 steps to delete a function. Do the same for the remaining 2 functions.\nSelect a bucket to delete.\nGo to Actions. Select Delete Type delete.\nSelect the Delete button. Translate In Batch translation, we cannot delete a completed job.\nIt only has 3 buttons Copy to copy the current job, Stop to stop a running job, Create job to create a new job. Cloudwatch Access Cloudwatch: Select Log groups. Select the log of a function we created. In the log streams section: Select all logs. Select the Delete button. IAM Delete the user we created: Select user: workshop-1-user. Select the Delete button. Enter the user name again to confirm. Select the Delete user button. Delete the role we created: Select role: workshop1-role. Select the Delete button. Enter the role name again to confirm. Select the Delete button. There are also other roles we have created, you can do the same to delete them. "
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/6-reference/",
+	"title": "References and idea",
+	"tags": [],
+	"description": "",
+	"content": "References https://aws.amazon.com/blogs/compute/translating-documents-at-enterprise-scale-with-serverless/ https://docs.aws.amazon.com/translate/latest/dg/what-is.html https://aws.amazon.com/blogs/machine-learning/translating-documents-with-amazon-translate-aws-lambda-and-the-new-batch-translate-api/ https://harshitdawar.medium.com/language-translation-api-using-aws-translate-8dc2230fba5b https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/translate.html https://aws.amazon.com/blogs/machine-learning/translating-your-website-or-application-automatically-with-amazon-translate-in-your-ci-cd-pipeline/ https://aws.amazon.com/blogs/compute/translating-content-dynamically-by-using-amazon-s3-object-lambda/ https://aws.amazon.com/blogs/machine-learning/create-a-serverless-pipeline-to-translate-large-documents-with-amazon-translate/ https://aws.amazon.com/translate/pricing/ https://aws.amazon.com/translate/faqs/ https://aws.amazon.com/blogs/machine-learning/customize-amazon-translate-output-to-meet-your-domain-and-organization-specific-vocabulary/ Idea In the next workshop about Amazon Translate, we will learn and practice customize your translations.\nAlso refer to this architecture to improve serverless translation. Additionally, we can combine with Amazon Polly to convert text-to-speech.\nThose are ideas for the next workshop about amazon translate.\n"
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/categories/",
+	"title": "Categories",
+	"tags": [],
+	"description": "",
+	"content": ""
+},
+{
+	"uri": "https://alexeanred.github.io/ws1/tags/",
+	"title": "Tags",
+	"tags": [],
+	"description": "",
+	"content": ""
+}]

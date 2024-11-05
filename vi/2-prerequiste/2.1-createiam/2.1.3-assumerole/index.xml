@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Cấp quyền cho user assume role on AWS Translate</title>
+    <link>https://alexeanred.github.io/ws1/vi/2-prerequiste/2.1-createiam/2.1.3-assumerole/</link>
+    <description>Recent content in Cấp quyền cho user assume role on AWS Translate</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>vi</language>
+    <atom:link href="https://alexeanred.github.io/ws1/vi/2-prerequiste/2.1-createiam/2.1.3-assumerole/index.xml" rel="self" type="application/rss+xml" />
+  </channel>
+</rss>
