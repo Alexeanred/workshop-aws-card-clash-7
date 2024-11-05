@@ -15,7 +15,7 @@ pre : " <b> 5. </b> "
     * ```AmazonS3FullAccess```
     * ```AWSCodePipelineCustomActionAccess```
 * Name the role: ```JenkinsAccess```
-* Chọn **Create role**.
+* Choose **Create role**.
 ![clean](/workshop-aws-card-clash-7/images/5.fwd/5.4_.png) 
 #### Configure ec2 instances and install Jenkins
 * We configure the ec2 instance as usual and need to pay attention to: 

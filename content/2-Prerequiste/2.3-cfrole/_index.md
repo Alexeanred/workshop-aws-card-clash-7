@@ -1,9 +1,9 @@
 ---
-title : "Create Cloudformation execution role"
-date : "`r Sys.Date()`" 
-weight: 3
-chapter: wrong
-previous : " <b> 2.3 </b> "
+title : "Create Cloudformation Execution Role"
+date :  "`r Sys.Date()`" 
+weight : 3
+chapter : false
+pre : " <b> 2.3 </b> "
 ---
 
 * Go to IAM role, select **Create role** button.
