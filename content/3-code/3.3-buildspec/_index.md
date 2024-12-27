@@ -15,20 +15,21 @@ phases:
       python: 3.12
     commands:
       - pip install --upgrade pip
+      - pip install pytest moto boto3 markdown
 
   pre_build:
+    commands:
+      - echo "Running tests for addItem"
+      - pytest lambda_functions/addItem/test_addItem.py --junitxml=addItem_report.xml  # Chạy test cho addItem
+      - echo "Running tests for removeItem"
+      - pytest lambda_functions/removeItem/test_removeItem.py --junitxml=removeItem_report.xml  # Chạy test cho removeItem
+  build:
     commands:
       - echo "Preparing Lambda function files without zipping"
       - mkdir -p python
       - pip install -r lambda_functions/lambda_layer_requirements.txt -t python
       - echo "Contents of python directory:"
       - ls -R python  # List files in the python directory for verification
-
-  post_build:
-    commands:
-      - echo "Uploading lambda_layer contents to S3 with KMS encryption"
-      - aws s3 cp python s3://$S3_BUCKET_NAME/layers/python --recursive --sse aws:kms
-      - echo "Upload complete"
 
 artifacts:
   discard-paths: yes  # This will remove the path structure in the output artifacts
@@ -48,32 +49,34 @@ artifacts:
       files:
         - 'python/**/*'  # Including all files in the python directory for layer
 ```
-* There are 3 main identified stages in the construction process. Here there are three stages: installation, pre_build and post_build.
+* There are 3 main phases defined in the build process. There are three phases: install, pre_build, and build.
 
-### Setting
+### Install
 
-* Set up Python 3.12 environment by specifying in runtime versions.
-* Update pip to ensure the latest version is used.
-* This is the initial installation step and ensures the environment is ready before running another command.
+* Set up the Python 3.12 environment by specifying in runtime-versions.
+
+* Update pip to ensure using the latest version and necessary libraries.
+
+* This is the initial installation step and ensures the environment is ready before running other commands.
 
 ### Pre_build
 
-* Main purpose: Prepare necessary files for Lambda layer without having to package them into zip files.
-* Create python folder and install all necessary libraries into that folder from lambda_layer_requirements.txt file.
-* Print out the python directory structure to verify the libraries have been installed properly.
-* No build: Since no compilation or additional processing is required, there is no need for a build phase.
+* We use the Pytest library to run the 2 test files we wrote to test lambda functions, if the assertions are successful, we will go to the next step.
 
-### post_build
-* Main purpose: Upload files in the python folder to S3 to use as Lambda layer, with encryption using KMS for security.
-* aws s3 cp with --recursive option to upload entire python directory.
-* Once completed, print a confirmation message to know the process is complete.
+### build
+* Main purpose: Prepare the necessary files for Lambda layer without having to package them into a zip file.
+
+* Create a python directory and install all the necessary libraries into that directory from the lambda_layer_requirements.txt file.
+
+* Print out the python directory structure to verify that the libraries are installed correctly.
 
 ### Artifacts
-* discard-paths: Removes path structures in artifacts, helping files include only names without sub-folder structures.
+* discard-paths: Removes the path structure in the artifacts, making the files just the name without the sub-directory structure.
 
-* files: Includes Python files for the Lambda functions addItem and removeItem. These are the main functions that will be implemented.
+* files: Include the Python files for the Lambda functions addItem and removeItem. These are the main functions that will be deployed.
 
 * secondary-artifacts
 
-* addItemArtifact and removeItemArtifact: Define two separate artifacts for each function addItem and removeItem, allowing each function to be deployed independently or used in different Lambdas.
-* layerArtifact: Includes all files in the python directory to create the Lambda layer, helping Lambda functions to use libraries without having to repackage.
+* addItemArtifact and removeItemArtifact: Define two separate artifacts for each addItem and removeItem function, allowing each function to be deployed independently or used in different Lambdas.
+
+* layerArtifact: Include all the files in the python directory to create the Lambda layer, allowing Lambda functions to use libraries without having to repackage them.

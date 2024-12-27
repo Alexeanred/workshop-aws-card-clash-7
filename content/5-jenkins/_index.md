@@ -63,22 +63,33 @@ echo "version: 0.2"
 
 # Install phase
 echo "Starting install phase..."
-/usr/bin/python3 --version  # Kiểm tra phiên bản Python
+/usr/bin/python3 --version # Check Python version
 /usr/bin/python3 -m pip install --upgrade pip
+/usr/bin/python3 -m pip install pytest moto boto3 markdown pyopenssl
+/usr/bin/python3 -m pip install --upgrade pyopenssl cryptography
 
-# Pre-build phase
+# Update PATH to include ~/.local/bin
+export PATH=$PATH:/var/lib/jenkins/.local/bin
+
+# Test phase
+echo "Starting test phase..."
+echo "Running tests for addItem..."
+pytest lambda_functions/addItem/test_addItem.py --junitxml=addItem_report.xml
+
+echo "Running tests for removeItem..."
+pytest lambda_functions/removeItem/test_removeItem.py --junitxml=removeItem_report.xml
+
+# Build phase
 echo "Starting pre_build phase..."
 echo "Preparing Lambda function files without zipping"
 mkdir -p python/python
 /usr/bin/python3 -m pip install -r lambda_functions/lambda_layer_requirements.txt -t python/python
 
 echo "Contents of python directory:"
-ls -R python  # List files in the python directory for verification
+ls -R python # List files in the python directory for verification
 
-# Post-build phase
-echo "Skipping S3 upload to avoid API usage."
 ```
-![clean](/workshop-aws-card-clash-7/images/5.fwd/5.11_.png)
+![clean](/workshop-aws-card-clash-7/images/5.fwd/5.22_.png)
 * In Post-Build Actions, select **AWS CodePipeline Publisher**.
 We configure 3 artifacts as follows:
 * Artifact 1:

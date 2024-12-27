@@ -12,7 +12,7 @@ pre : " <b> 1. </b> "
     * User pushes code to GitHub repository, and CI/CD pipeline created by CodePipeline will automatically deploy.
     * CodePipeline will have 3 stages: Source, Build, Deploy.
     * The Source phase will track changes from the GitHub repository and update the latest.
-    * Next, the Build phase will retrieve the source code and perform the build process.
+    * Next, the Build phase will retrieve the source code and perform the build and test process.
     * Finally, the Deploy phase will use a CloudFormation template to deploy the changed resources.
 * **Note**: Because the AWS CodeCommit service is about to be discontinued, we will replace it with Github.
 

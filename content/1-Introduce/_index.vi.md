@@ -12,7 +12,7 @@ pre : " <b> 1. </b> "
     * User push code lên GitHub repository, và quy trình CI/CD được tạo ra bởi CodePipeline sẽ tự động triển khai.
     * CodePipeline sẽ có 3 giai đoạn: Source, Build, Deploy.
     * Giai đoạn Source sẽ theo dõi thay đổi từ GitHub repository và cập nhật mới nhất.
-    * Tiếp theo, giai đoạn Build sẽ lấy mã nguồn và thực hiện quá trình build.
+    * Tiếp theo, giai đoạn Build sẽ lấy mã nguồn và thực hiện quá trình build và test code.
     * Cuối cùng, giai đoạn Deploy sẽ sử dụng một CloudFormation template để triển khai các tài nguyên đã thay đổi.
 * **Note**: Do dịch vụ AWS CodeCommit sắp khai tử nên ta thay thế bằng Github.
 ## Giới thiệu dịch vụ:
